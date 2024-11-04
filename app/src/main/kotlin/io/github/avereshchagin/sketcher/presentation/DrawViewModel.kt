@@ -26,9 +26,24 @@ class DrawViewModel(
 
     fun onAction(action: DrawUiAction) {
         when (action) {
+            is DrawUiAction.Lifecycle -> onLifecycleAction(action)
             is DrawUiAction.Frame -> onFrameAction(action)
             is DrawUiAction.Tool -> onToolAction(action)
             is DrawUiAction.Draw -> onDrawAction(action)
+        }
+    }
+
+    private fun onLifecycleAction(action: DrawUiAction.Lifecycle) {
+        when (action) {
+            is DrawUiAction.Lifecycle.Start -> {
+                if (_state.value.isPlaying) {
+                    playJob?.cancel()
+                    playJob = viewModelScope.launch {
+                        animate()
+                    }
+                }
+            }
+            is DrawUiAction.Lifecycle.Stop -> playJob?.cancel()
         }
     }
 
@@ -116,24 +131,7 @@ class DrawViewModel(
                     playJob?.cancel()
                     playJob = viewModelScope.launch {
                         framesLogic.updateCurrentFrame(FrameContent(_state.value.operations))
-                        framesLogic.resetToBeginning()
-                        while (true) {
-                            val visibleFrames = framesLogic.getCurrentVisibleFrames()
-                            val uuid = visibleFrames.currentFrameUuid
-                            val operations = visibleFrames.currentFrame.operations.toMutableList()
-                            _state.update { state ->
-                                state.copy(
-                                    isPlaying = true,
-                                    currentFrameUuid = uuid,
-                                    operations = operations,
-                                    prevFrameOperations = emptyList(),
-                                    lastOperation = operations.size,
-                                )
-                            }
-
-                            delay(1000)
-                            framesLogic.nextFrame(isLoop = true)
-                        }
+                        animate()
                     }
                 }
             }
@@ -172,6 +170,27 @@ class DrawViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun animate() {
+        framesLogic.resetToBeginning()
+        while (true) {
+            val visibleFrames = framesLogic.getCurrentVisibleFrames()
+            val uuid = visibleFrames.currentFrameUuid
+            val operations = visibleFrames.currentFrame.operations.toMutableList()
+            _state.update { state ->
+                state.copy(
+                    isPlaying = true,
+                    currentFrameUuid = uuid,
+                    operations = operations,
+                    prevFrameOperations = emptyList(),
+                    lastOperation = operations.size,
+                )
+            }
+
+            delay(1000)
+            framesLogic.nextFrame(isLoop = true)
         }
     }
 }

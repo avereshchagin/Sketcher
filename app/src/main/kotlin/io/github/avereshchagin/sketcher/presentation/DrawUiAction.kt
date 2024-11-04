@@ -4,6 +4,13 @@ import io.github.avereshchagin.sketcher.domain.Position
 
 sealed interface DrawUiAction {
 
+    sealed interface Lifecycle : DrawUiAction {
+
+        data object Start : Lifecycle
+
+        data object Stop : Lifecycle
+    }
+
     sealed interface Frame : DrawUiAction {
 
         data object Undo : Frame

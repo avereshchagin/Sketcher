@@ -46,6 +46,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onAction(DrawUiAction.Lifecycle.Start)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onAction(DrawUiAction.Lifecycle.Stop)
+    }
 }
 
 @Composable
