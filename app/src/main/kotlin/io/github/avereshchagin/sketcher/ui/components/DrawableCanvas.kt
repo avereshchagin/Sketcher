@@ -65,41 +65,46 @@ fun DrawableCanvas(
                             val event = awaitPointerEvent()
                             when (event.type) {
                                 PointerEventType.Press -> {
-                                    val position = event.changes.first().position
-                                    currentPath.moveTo(position.x, position.y)
-                                    drawNonce++
+                                    if (event.changes.size == 1) {
+                                        val position = event.changes.first().position
+                                        currentPath.moveTo(position.x, position.y)
+                                        drawNonce++
+                                    }
                                 }
 
                                 PointerEventType.Move -> {
-                                    event.changes.fastForEach {
-                                        currentPath.lineTo(it.position.x, it.position.y)
+                                    if (event.changes.size == 1) {
+                                        val position = event.changes.first().position
+                                        currentPath.lineTo(position.x, position.y)
+                                        drawNonce++
                                     }
-                                    drawNonce++
                                 }
 
                                 PointerEventType.Release -> {
-                                    val positions = ArrayList<Position>()
-                                    for (segment in currentPath) {
-                                        when (segment.type) {
-                                            PathSegment.Type.Move -> positions.add(
-                                                Position(
-                                                    segment.points[0],
-                                                    segment.points[1]
+                                    if (event.changes.size == 1) {
+                                        val positions = ArrayList<Position>()
+                                        for (segment in currentPath) {
+                                            when (segment.type) {
+                                                PathSegment.Type.Move -> positions.add(
+                                                    Position(
+                                                        segment.points[0],
+                                                        segment.points[1]
+                                                    )
                                                 )
-                                            )
 
-                                            PathSegment.Type.Line -> positions.add(
-                                                Position(
-                                                    segment.points[2],
-                                                    segment.points[3]
+                                                PathSegment.Type.Line -> positions.add(
+                                                    Position(
+                                                        segment.points[2],
+                                                        segment.points[3]
+                                                    )
                                                 )
-                                            )
 
-                                            else -> {}
+                                                else -> {}
+                                            }
                                         }
+                                        onAction(DrawUiAction.Draw.AddPath(positions))
+                                        currentPath.reset()
                                     }
-                                    onAction(DrawUiAction.Draw.AddPath(positions))
-                                    currentPath.reset()
                                 }
                             }
                         }
