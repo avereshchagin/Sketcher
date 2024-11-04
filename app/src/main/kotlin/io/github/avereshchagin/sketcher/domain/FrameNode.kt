@@ -1,4 +1,4 @@
-package io.github.avereshchagin.sketcher.data
+package io.github.avereshchagin.sketcher.domain
 
 import java.util.UUID
 

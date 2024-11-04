@@ -1,8 +1,8 @@
-package io.github.avereshchagin.sketcher.data
+package io.github.avereshchagin.sketcher.domain
 
 import android.util.Log
 
-class FramesRepository {
+class FramesLogic {
 
     private var firstFrame: FrameNode? = null
     private var lastFrame: FrameNode? = null
@@ -21,6 +21,9 @@ class FramesRepository {
         val frame = FrameNode(FrameContent())
         frame.prev = currentFrame
         frame.next = currentFrame.next
+        if (lastFrame == currentFrame) {
+            lastFrame = frame
+        }
         currentFrame.next?.prev = frame
         currentFrame.next = frame
         currentFrame = frame
@@ -82,9 +85,3 @@ class FramesRepository {
         Log.i("DRAW", "")
     }
 }
-
-class VisibleFrames(
-    val currentFrameUuid: String,
-    val currentFrame: FrameContent,
-    val previousFrame: FrameContent?,
-)

@@ -2,8 +2,8 @@ package io.github.avereshchagin.sketcher.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.avereshchagin.sketcher.data.FrameContent
-import io.github.avereshchagin.sketcher.data.FramesRepository
+import io.github.avereshchagin.sketcher.domain.FrameContent
+import io.github.avereshchagin.sketcher.domain.FramesLogic
 import io.github.avereshchagin.sketcher.domain.DrawOperation
 import io.github.avereshchagin.sketcher.domain.DrawTool
 import kotlinx.coroutines.Job
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DrawViewModel(
-    private val framesRepository: FramesRepository
+    private val framesLogic: FramesLogic
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DrawUiState())
@@ -45,8 +45,8 @@ class DrawViewModel(
                 )
             }
             is DrawUiAction.Frame.Add -> {
-                framesRepository.updateCurrentFrame(FrameContent(_state.value.operations))
-                val uuid = framesRepository.addFrame()
+                framesLogic.updateCurrentFrame(FrameContent(_state.value.operations))
+                val uuid = framesLogic.addFrame()
                 _state.update { state ->
                     state.copy(
                         currentFrameUuid = uuid,
@@ -57,8 +57,8 @@ class DrawViewModel(
                 }
             }
             is DrawUiAction.Frame.Delete -> {
-                framesRepository.deleteCurrentFrame()
-                val visibleFrames = framesRepository.getCurrentVisibleFrames()
+                framesLogic.deleteCurrentFrame()
+                val visibleFrames = framesLogic.getCurrentVisibleFrames()
                 _state.update { state ->
                     val uuid = visibleFrames.currentFrameUuid
                     val operations = visibleFrames.currentFrame.operations.toMutableList()
@@ -74,8 +74,8 @@ class DrawViewModel(
                 if (_state.value.isPlaying || playJob?.isActive == true) {
                     viewModelScope.launch {
                         playJob?.cancelAndJoin()
-                        framesRepository.resetToLast()
-                        val visibleFrames = framesRepository.getCurrentVisibleFrames()
+                        framesLogic.resetToLast()
+                        val visibleFrames = framesLogic.getCurrentVisibleFrames()
                         val uuid = visibleFrames.currentFrameUuid
                         val operations = visibleFrames.currentFrame.operations.toMutableList()
                         _state.update { state ->
@@ -91,10 +91,10 @@ class DrawViewModel(
                 } else {
                     playJob?.cancel()
                     playJob = viewModelScope.launch {
-                        framesRepository.updateCurrentFrame(FrameContent(_state.value.operations))
-                        framesRepository.resetToBeginning()
+                        framesLogic.updateCurrentFrame(FrameContent(_state.value.operations))
+                        framesLogic.resetToBeginning()
                         while (true) {
-                            val visibleFrames = framesRepository.getCurrentVisibleFrames()
+                            val visibleFrames = framesLogic.getCurrentVisibleFrames()
                             val uuid = visibleFrames.currentFrameUuid
                             val operations = visibleFrames.currentFrame.operations.toMutableList()
                             _state.update { state ->
@@ -108,7 +108,7 @@ class DrawViewModel(
                             }
 
                             delay(1000)
-                            framesRepository.nextFrame(isLoop = true)
+                            framesLogic.nextFrame(isLoop = true)
                         }
                     }
                 }
