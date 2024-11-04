@@ -1,4 +1,7 @@
 package io.github.avereshchagin.sketcher.data
 
-class FrameContent {
-}
+import io.github.avereshchagin.sketcher.domain.DrawOperation
+
+data class FrameContent(
+    val operations: List<DrawOperation> = emptyList(),
+)

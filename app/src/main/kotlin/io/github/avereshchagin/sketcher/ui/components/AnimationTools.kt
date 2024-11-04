@@ -1,23 +1,34 @@
 package io.github.avereshchagin.sketcher.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import io.github.avereshchagin.sketcher.presentation.DrawUiAction
 import io.github.avereshchagin.sketcher.ui.theme.Icons
 
 @Composable
 fun AnimationTools(
+    isPlaying: Boolean,
     onAction: (DrawUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         IconButton(
             onClick = {
                 onAction(DrawUiAction.Frame.Undo)
-            }
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Undo,
@@ -28,7 +39,8 @@ fun AnimationTools(
         IconButton(
             onClick = {
                 onAction(DrawUiAction.Frame.Redo)
-            }
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Redo,
@@ -36,8 +48,15 @@ fun AnimationTools(
             )
         }
 
+        Spacer(
+            modifier = Modifier.width(16.dp)
+        )
+
         IconButton(
-            onClick = {}
+            onClick = {
+                onAction(DrawUiAction.Frame.Delete)
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Bin,
@@ -46,7 +65,10 @@ fun AnimationTools(
         }
 
         IconButton(
-            onClick = {}
+            onClick = {
+                onAction(DrawUiAction.Frame.Add)
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Plus,
@@ -54,29 +76,17 @@ fun AnimationTools(
             )
         }
 
-        IconButton(
-            onClick = {}
-        ) {
-            Icon(
-                painter = Icons.Layers,
-                contentDescription = null
-            )
-        }
+        Spacer(
+            modifier = Modifier.width(16.dp)
+        )
 
         IconButton(
-            onClick = {}
+            onClick = {
+                onAction(DrawUiAction.Frame.TogglePlayPause)
+            }
         ) {
             Icon(
-                painter = Icons.Pause,
-                contentDescription = null
-            )
-        }
-
-        IconButton(
-            onClick = {}
-        ) {
-            Icon(
-                painter = Icons.Play,
+                painter = if (isPlaying) Icons.Pause else Icons.Play,
                 contentDescription = null
             )
         }

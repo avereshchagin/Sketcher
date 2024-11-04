@@ -36,6 +36,7 @@ fun ColorSelector(
     selectedColor: Color,
     onAction: (DrawUiAction) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
     val state = rememberTooltipState(isPersistent = true)
@@ -91,10 +92,14 @@ fun ColorSelector(
             modifier = Modifier
                 .width(28.dp)
                 .height(28.dp)
-                .clickable {
-                    isFull = false
-                    scope.launch { state.show() }
-                },
+                .then(
+                    if (enabled) {
+                        Modifier.clickable {
+                            isFull = false
+                            scope.launch { state.show() }
+                        }
+                    } else Modifier
+                ),
             color = selectedColor,
             isSelected = state.isVisible
         )

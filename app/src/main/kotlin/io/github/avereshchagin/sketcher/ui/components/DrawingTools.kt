@@ -17,6 +17,7 @@ import io.github.avereshchagin.sketcher.ui.theme.Icons
 
 @Composable
 fun DrawingTools(
+    isPlaying: Boolean,
     selectedTool: DrawTool,
     selectedColor: Color,
     onAction: (DrawUiAction) -> Unit,
@@ -30,7 +31,8 @@ fun DrawingTools(
         IconButton(
             onClick = {
                 onAction(DrawUiAction.Tool.Pencil)
-            }
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Pencil,
@@ -42,7 +44,8 @@ fun DrawingTools(
         IconButton(
             onClick = {
                 onAction(DrawUiAction.Tool.Eraser)
-            }
+            },
+            enabled = !isPlaying,
         ) {
             Icon(
                 painter = Icons.Eraser,
@@ -53,6 +56,7 @@ fun DrawingTools(
 
         ColorSelector(
             modifier = Modifier.padding(8.dp),
+            enabled = !isPlaying,
             selectedColor = selectedColor,
             onAction = onAction
         )

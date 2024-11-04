@@ -36,7 +36,9 @@ import io.github.avereshchagin.sketcher.ui.util.AndroidOperation
 
 @Composable
 fun DrawableCanvas(
+    isPlaying: Boolean,
     paths: SnapshotStateList<AndroidOperation>,
+    prevFramePaths: SnapshotStateList<AndroidOperation>,
     currentTool: DrawTool,
     currentColor: Color,
     onAction: (DrawUiAction) -> Unit,
@@ -50,53 +52,55 @@ fun DrawableCanvas(
         mutableIntStateOf(0)
     }
 
-    val backgroundBrush = ShaderBrush(ImageShader(ImageBitmap.imageResource(id = R.drawable.canvas)))
+    val backgroundBrush = ShaderBrush(ImageShader(ImageBitmap.imageResource(id = R.drawable.canvas_bg)))
 
     Canvas(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .clipToBounds()
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        when (event.type) {
-                            PointerEventType.Press -> {
-                                val position = event.changes.first().position
-                                currentPath.moveTo(position.x, position.y)
-                                drawNonce++
-                            }
-
-                            PointerEventType.Move -> {
-                                event.changes.fastForEach {
-                                    currentPath.lineTo(it.position.x, it.position.y)
+            .pointerInput(isPlaying) {
+                if (!isPlaying) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            when (event.type) {
+                                PointerEventType.Press -> {
+                                    val position = event.changes.first().position
+                                    currentPath.moveTo(position.x, position.y)
+                                    drawNonce++
                                 }
-                                drawNonce++
-                            }
 
-                            PointerEventType.Release -> {
-                                val positions = ArrayList<Position>()
-                                for (segment in currentPath) {
-                                    when (segment.type) {
-                                        PathSegment.Type.Move -> positions.add(
-                                            Position(
-                                                segment.points[0],
-                                                segment.points[1]
-                                            )
-                                        )
-
-                                        PathSegment.Type.Line -> positions.add(
-                                            Position(
-                                                segment.points[2],
-                                                segment.points[3]
-                                            )
-                                        )
-
-                                        else -> {}
+                                PointerEventType.Move -> {
+                                    event.changes.fastForEach {
+                                        currentPath.lineTo(it.position.x, it.position.y)
                                     }
+                                    drawNonce++
                                 }
-                                onAction(DrawUiAction.Draw.AddPath(positions))
-                                currentPath.reset()
+
+                                PointerEventType.Release -> {
+                                    val positions = ArrayList<Position>()
+                                    for (segment in currentPath) {
+                                        when (segment.type) {
+                                            PathSegment.Type.Move -> positions.add(
+                                                Position(
+                                                    segment.points[0],
+                                                    segment.points[1]
+                                                )
+                                            )
+
+                                            PathSegment.Type.Line -> positions.add(
+                                                Position(
+                                                    segment.points[2],
+                                                    segment.points[3]
+                                                )
+                                            )
+
+                                            else -> {}
+                                        }
+                                    }
+                                    onAction(DrawUiAction.Draw.AddPath(positions))
+                                    currentPath.reset()
+                                }
                             }
                         }
                     }
@@ -108,13 +112,23 @@ fun DrawableCanvas(
     ) {
         drawRect(brush = backgroundBrush)
 
+        if (!isPlaying) {
+            drawWithLayer {
+                prevFramePaths.fastForEach { path ->
+                    drawPath(path.path, path.tool, path.color, alpha = 0.5f)
+                }
+            }
+        }
+
         drawWithLayer {
             paths.fastForEach { path ->
                 drawPath(path.path, path.tool, path.color)
             }
 
-            drawNonce.let {
-                drawPath(currentPath, currentTool, currentColor)
+            if (!isPlaying) {
+                drawNonce.let {
+                    drawPath(currentPath, currentTool, currentColor)
+                }
             }
         }
     }
@@ -128,18 +142,19 @@ private fun DrawScope.drawWithLayer(block: DrawScope.() -> Unit) {
     }
 }
 
-private fun DrawScope.drawPath(path: AndroidPath, tool: DrawTool, color: Color) {
+private fun DrawScope.drawPath(path: AndroidPath, tool: DrawTool, color: Color, alpha: Float = 1f) {
     when (tool) {
         DrawTool.PENCIL -> drawPath(
-            path,
-            color,
+            path = path,
+            color = color,
             style = Stroke(width = 10f),
-            blendMode = BlendMode.SrcOver
+            blendMode = BlendMode.SrcOver,
+            alpha = alpha,
         )
 
         DrawTool.ERASER -> drawPath(
-            path,
-            Color.Black,
+            path = path,
+            color = Color.Black,
             style = Stroke(width = 30f),
             blendMode = BlendMode.Clear
         )

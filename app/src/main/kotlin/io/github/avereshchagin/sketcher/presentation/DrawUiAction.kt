@@ -1,6 +1,5 @@
 package io.github.avereshchagin.sketcher.presentation
 
-import androidx.compose.ui.graphics.Color
 import io.github.avereshchagin.sketcher.domain.Position
 
 sealed interface DrawUiAction {
@@ -10,6 +9,12 @@ sealed interface DrawUiAction {
         data object Undo : Frame
 
         data object Redo : Frame
+
+        data object Add : Frame
+
+        data object Delete : Frame
+
+        data object TogglePlayPause : Frame
     }
 
     sealed interface Tool : DrawUiAction {
