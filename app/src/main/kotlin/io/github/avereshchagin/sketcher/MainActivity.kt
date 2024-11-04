@@ -60,6 +60,8 @@ fun MainScreen(
         AnimationTools(
             modifier = Modifier.fillMaxWidth(),
             isPlaying = state.isPlaying,
+            canUndo = state.lastOperation > 0,
+            canRedo = state.lastOperation < state.operations.size,
             onAction = onAction
         )
 

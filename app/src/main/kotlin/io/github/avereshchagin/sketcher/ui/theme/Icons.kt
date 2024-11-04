@@ -23,6 +23,14 @@ object Icons {
         @Composable
         get() = painterResource(R.drawable.ic_plus)
 
+    val Copy: Painter
+        @Composable
+        get() = painterResource(R.drawable.ic_copy)
+
+    val Cross: Painter
+        @Composable
+        get() = painterResource(R.drawable.ic_cross)
+
     val Layers: Painter
         @Composable
         get() = painterResource(R.drawable.ic_layers)

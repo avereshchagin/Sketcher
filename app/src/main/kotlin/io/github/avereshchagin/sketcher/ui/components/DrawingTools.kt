@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.avereshchagin.sketcher.domain.DrawTool
 import io.github.avereshchagin.sketcher.presentation.DrawUiAction
-import io.github.avereshchagin.sketcher.ui.theme.Green
+import io.github.avereshchagin.sketcher.ui.theme.Colors
 import io.github.avereshchagin.sketcher.ui.theme.Icons
 
 @Composable
@@ -36,7 +37,7 @@ fun DrawingTools(
         ) {
             Icon(
                 painter = Icons.Pencil,
-                tint = if (selectedTool == DrawTool.PENCIL) Green else Color.Black,
+                tint = if (selectedTool == DrawTool.PENCIL) Colors.Selected else LocalContentColor.current,
                 contentDescription = null
             )
         }
@@ -49,7 +50,7 @@ fun DrawingTools(
         ) {
             Icon(
                 painter = Icons.Eraser,
-                tint = if (selectedTool == DrawTool.ERASER) Green else Color.Black,
+                tint = if (selectedTool == DrawTool.ERASER) Colors.Selected else LocalContentColor.current,
                 contentDescription = null
             )
         }

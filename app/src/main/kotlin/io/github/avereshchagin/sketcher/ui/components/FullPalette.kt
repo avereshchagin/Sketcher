@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.avereshchagin.sketcher.ui.theme.ModalBackground
-import io.github.avereshchagin.sketcher.ui.theme.ModalBorder
+import io.github.avereshchagin.sketcher.ui.theme.Colors
 import io.github.avereshchagin.sketcher.ui.util.ImmutableList
 
 val defaultPalette = listOf(
@@ -61,12 +60,12 @@ fun FullPalette(
     Column(
         modifier = Modifier
             .background(
-                color = ModalBackground,
+                color = Colors.ModalBackground,
                 shape = RoundedCornerShape(4.dp),
             )
             .border(
                 width = 1.dp,
-                color = ModalBorder,
+                color = Colors.ModalBorder,
                 shape = RoundedCornerShape(4.dp),
             )
             .padding(16.dp),

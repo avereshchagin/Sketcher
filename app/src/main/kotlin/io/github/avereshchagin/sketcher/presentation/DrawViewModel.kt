@@ -56,6 +56,30 @@ class DrawViewModel(
                     )
                 }
             }
+            is DrawUiAction.Frame.Copy -> {
+                framesLogic.updateCurrentFrame(FrameContent(_state.value.operations))
+                val uuid = framesLogic.duplicate()
+                _state.update { state ->
+                    state.copy(
+                        currentFrameUuid = uuid,
+                        operations = state.operations,
+                        prevFrameOperations = state.operations,
+                        lastOperation = state.operations.size,
+                    )
+                }
+            }
+            is DrawUiAction.Frame.DeleteAll -> {
+                framesLogic.clear()
+                val uuid = framesLogic.getCurrentVisibleFrames().currentFrameUuid
+                _state.update { state ->
+                    state.copy(
+                        currentFrameUuid = uuid,
+                        operations = ArrayList(),
+                        prevFrameOperations = emptyList(),
+                        lastOperation = 0,
+                    )
+                }
+            }
             is DrawUiAction.Frame.Delete -> {
                 framesLogic.deleteCurrentFrame()
                 val visibleFrames = framesLogic.getCurrentVisibleFrames()

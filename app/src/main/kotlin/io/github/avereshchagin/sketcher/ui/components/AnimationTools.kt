@@ -16,19 +16,21 @@ import io.github.avereshchagin.sketcher.ui.theme.Icons
 @Composable
 fun AnimationTools(
     isPlaying: Boolean,
+    canUndo: Boolean,
+    canRedo: Boolean,
     onAction: (DrawUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = {
                 onAction(DrawUiAction.Frame.Undo)
             },
-            enabled = !isPlaying,
+            enabled = !isPlaying && canUndo,
         ) {
             Icon(
                 painter = Icons.Undo,
@@ -40,7 +42,7 @@ fun AnimationTools(
             onClick = {
                 onAction(DrawUiAction.Frame.Redo)
             },
-            enabled = !isPlaying,
+            enabled = !isPlaying && canRedo,
         ) {
             Icon(
                 painter = Icons.Redo,
@@ -51,6 +53,18 @@ fun AnimationTools(
         Spacer(
             modifier = Modifier.width(16.dp)
         )
+
+        IconButton(
+            onClick = {
+                onAction(DrawUiAction.Frame.DeleteAll)
+            },
+            enabled = !isPlaying,
+        ) {
+            Icon(
+                painter = Icons.Cross,
+                contentDescription = null
+            )
+        }
 
         IconButton(
             onClick = {
@@ -72,6 +86,18 @@ fun AnimationTools(
         ) {
             Icon(
                 painter = Icons.Plus,
+                contentDescription = null
+            )
+        }
+
+        IconButton(
+            onClick = {
+                onAction(DrawUiAction.Frame.Copy)
+            },
+            enabled = !isPlaying,
+        ) {
+            Icon(
+                painter = Icons.Copy,
                 contentDescription = null
             )
         }

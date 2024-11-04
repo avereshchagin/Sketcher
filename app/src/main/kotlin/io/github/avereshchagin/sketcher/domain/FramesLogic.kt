@@ -31,6 +31,26 @@ class FramesLogic {
         return currentFrame.uuid
     }
 
+    fun duplicate(): String {
+        val frame = FrameNode(currentFrame.content)
+        frame.prev = currentFrame
+        frame.next = currentFrame.next
+        if (lastFrame == currentFrame) {
+            lastFrame = frame
+        }
+        currentFrame.next?.prev = frame
+        currentFrame.next = frame
+        currentFrame = frame
+
+        return currentFrame.uuid
+    }
+
+    fun clear() {
+        currentFrame = FrameNode(FrameContent())
+        firstFrame = currentFrame
+        lastFrame = currentFrame
+    }
+
     fun deleteCurrentFrame() {
         if (lastFrame == currentFrame) {
             lastFrame = currentFrame.prev

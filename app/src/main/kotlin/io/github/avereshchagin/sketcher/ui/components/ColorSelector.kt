@@ -101,7 +101,8 @@ fun ColorSelector(
                     } else Modifier
                 ),
             color = selectedColor,
-            isSelected = state.isVisible
+            isSelected = state.isVisible,
+            drawOutline = true,
         )
     }
 }

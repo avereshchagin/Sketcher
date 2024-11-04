@@ -12,7 +12,11 @@ sealed interface DrawUiAction {
 
         data object Add : Frame
 
+        data object Copy : Frame
+
         data object Delete : Frame
+
+        data object DeleteAll : Frame
 
         data object TogglePlayPause : Frame
     }
